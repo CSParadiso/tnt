@@ -23,14 +23,16 @@ export const getFoodsByCategory = async (category: string): Promise<Food[]> => {
 };
  */
 
+import { Taxonomy } from "@/hooks/useFoods";
 import { Foods } from "@/models/foods";
 
-export async function getFoodsByCategory(
-  category: string,
+export async function getFoodsByTaxonomy(
+  taxonomy: Taxonomy,
+  value: string,
   query: string = ""
 ): Promise<Foods[]> {
   // Agregar guiones para evitar los espacios en la URL
-  category = category
+  value = value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim()
@@ -44,13 +46,31 @@ export async function getFoodsByCategory(
   // tagtype: qué tipo de datos queremos (categories)
   // lc: código de idioma (es para español)
   // string: el término de búsqueda
-  const params = new URLSearchParams({
-    categories_tags_es: category,
-    tagtype: "foods",
-    lc: "es",
-    /* string: `categories_tags_es=${category}`, */
-    limit: "20",
-  });
+  // Si es categoria
+  const params =
+    taxonomy === "category"
+      ? new URLSearchParams({
+          categories_tags_es: value,
+          tagtype: "foods",
+          lc: "es",
+          /* string: `categories_tags_es=${category}`, */
+          limit: "20",
+        })
+      : taxonomy === "brand"
+      ? new URLSearchParams({
+          brands_tags: value,
+          tagtype: "foods",
+          lc: "es",
+          /* string: `categories_tags_es=${category}`, */
+          limit: "20",
+        })
+      : new URLSearchParams({
+          labels_tags: value,
+          tagtype: "foods",
+          lc: "es",
+          /* string: `categories_tags_es=${category}`, */
+          limit: "20",
+        });
   // tagtype=foods&lc=es&string={query}&limit=20
 
   const response = await fetch(`${BASE_URL}?${params.toString()}`, {
@@ -65,8 +85,8 @@ export async function getFoodsByCategory(
 
   const data = await response.json();
 
-  /* console.debug(`${BASE_URL}?${params.toString()}`);
-  console.debug(data.products); */
+  /* console.debug(`${BASE_URL}?${params.toString()}`);*/
+  console.debug(data.products);
 
   return data.products;
 }

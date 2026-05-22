@@ -5,7 +5,7 @@ export const ROUTES = {
   TABS_FAVS: "/favs", //(tabs)/favs
   TABS_SEARCH: "/search", //(tabs)/seacrh
   CATEGORIES: "/categories/[id]", //categories/{id}
-  TAGS: "/tags/[nombre]",
+  TAGS: "/tags/[id]",
   BRANDS: "/brands/[nombre]",
   FOODS: "/foods/[id]",
   /* ALIMENTO: "/alimento",

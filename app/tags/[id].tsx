@@ -15,33 +15,24 @@ import {
 } from "react-native";
 import "react-native-reanimated";
 
-type CategoryItemScreenParams = {
+type TagsItemScreenParams = {
   id: string;
 };
 
-export default function CategoryItemScreen() {
-  const { id } = useLocalSearchParams<CategoryItemScreenParams>();
-  console.log("ID: ", id);
+export default function TagsItemScreen() {
+  const { id } = useLocalSearchParams<TagsItemScreenParams>();
+  const rawId = Array.isArray(id) ? id[0] : id;
+  const title = rawId.charAt(0).toUpperCase() + rawId.slice(1);
+
+  // No fetch here — SeccionList handles it internally
 
   return (
     <>
-      <Stack.Screen
-        options={{ title: id.charAt(0).toUpperCase() + id.slice(1) }}
-      />
+      <Stack.Screen options={{ title }} />
       <ScrollView contentContainerStyle={styles.container}>
-        {/* <WelcomeMessage
-    header="Sabores curados"
-    message={
-      <>
-        El arte del descubrimiento{" "}
-        <Text style={{ fontWeight: "bold", color: "green" }}>
-          conscienzudo.
-        </Text>
-      </>
-    }
-  /> */}
         <SeccionList
-          title={id.charAt(0).toUpperCase() + id.slice(1)}
+          title={title}
+          rawId={rawId} // pass rawId so SeccionList can fetch
           subtitle=""
           route={ROUTES.FOODS}
         />
@@ -52,18 +43,18 @@ export default function CategoryItemScreen() {
 
 type SectionListProps = {
   title: string;
+  rawId: string; // added
   subtitle: string;
   route: AppRoute;
 };
 
-const SeccionList = ({ title, subtitle, route }: SectionListProps) => {
+const SeccionList = ({ title, rawId, subtitle, route }: SectionListProps) => {
   const router = useRouter();
 
-  // fetchear categorias
-  const { data, isError, isFetching, isLoading } = useFoods("category", title);
+  const { data, isError, isLoading } = useFoods("tag", rawId); // fetch here
 
   const navToItem = (item: Foods) => {
-    router.push(buildRoute(route, { id: item.code })); //
+    router.push(buildRoute(route, { id: item.code }));
   };
 
   return (
@@ -79,18 +70,16 @@ const SeccionList = ({ title, subtitle, route }: SectionListProps) => {
         {!isLoading && !isError ? (
           <FlatList
             style={{ width: "100%" }}
-            //numColumns={2}
             scrollEnabled={false}
             data={data}
             keyExtractor={(item) => item.code}
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => (
-              /* <Pressable onPress={() => router.push("/ejemplos/fetch/temp")}> */
               <Pressable
                 style={styles.gridItem}
                 onPress={() => navToItem(item)}
               >
-                <FoodCard food={item}></FoodCard>
+                <FoodCard food={item} />
               </Pressable>
             )}
           />
