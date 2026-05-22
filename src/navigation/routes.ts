@@ -6,7 +6,7 @@ export const ROUTES = {
   TABS_SEARCH: "/search", //(tabs)/seacrh
   CATEGORIES: "/categories/[id]", //categories/{id}
   TAGS: "/tags/[id]",
-  BRANDS: "/brands/[nombre]",
+  BRANDS: "/brands/[id]",
   FOODS: "/foods/[id]",
   /* ALIMENTO: "/alimento",
   FORMULARIO_PASO_1: "/formulario/paso1",

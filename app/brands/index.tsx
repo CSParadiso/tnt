@@ -1,11 +1,6 @@
 import BrandCard from "@/components/brandCard";
 import CategoryCard from "@/components/categoryCard";
-import { ErrorState } from "@/components/errorState";
-import { LoadingState } from "@/components/loadingState";
 import TagCard from "@/components/tagCard";
-import { useBrands } from "@/hooks/useBrands";
-import { useCategories } from "@/hooks/useCategories";
-import { useTags } from "@/hooks/useTags";
 import { categorias } from "@/models/categorias";
 import { etiquetas } from "@/models/etiquetas";
 import { marcas } from "@/models/marcas";
@@ -38,7 +33,6 @@ export default function IndexScreen() {
       />
       <SeccionList
         title="Categorias"
-        //subtitle="Ver librería"
         subtitle="Ver librería"
         items={categorias}
         route={ROUTES.CATEGORIES}
@@ -98,31 +92,17 @@ const SeccionList = ({
 }: SectionListProps) => {
   const router = useRouter();
 
-  const categoriesQuery = useCategories();
-  const tagsQuery = useTags();
-  const brandsQuery = useBrands();
-
-  const isLoading =
-    (variant === "categories" && categoriesQuery.isFetching) ||
-    (variant === "tags" && tagsQuery.isFetching) ||
-    (variant === "brands" && brandsQuery.isFetching);
-
-  const isError =
-    (variant === "categories" && categoriesQuery.isError) ||
-    (variant === "tags" && tagsQuery.isError) ||
-    (variant === "brands" && brandsQuery.isError);
-
   const navToListItem = (item: ListItem) => {
-    router.push(buildRoute(route, { id: item }));
+    router.push(buildRoute(route, { nombre: item.id }));
   };
 
   const renderItem = ({ item }: any) => {
     switch (variant) {
       case "categories":
-        return <CategoryCard title={item} />;
+        return <CategoryCard title={item.nombre} />;
 
       case "tags":
-        return <TagCard title={item} />;
+        return <TagCard title={item.nombre} />;
 
       case "brands":
         return <BrandCard item={item} />;
@@ -137,67 +117,33 @@ const SeccionList = ({
     <View style={styles.listBlock}>
       <View style={styles.listTitleRow}>
         <Text style={styles.listTitle}>{title}</Text>
-        {variant === "categories" ? (
-          //<TouchableOpacity onPress={() => router.push("/categories")}>
-          <Text style={styles.listSubtitle}>{subtitle}</Text>
-        ) : (
-          //</TouchableOpacity>
-          <Text style={styles.listSubtitle}>{subtitle}</Text>
-        )}
-        {/* <Text style={styles.listSubtitle}>{subtitle}</Text> */}
+        <Text style={styles.listSubtitle}>{subtitle}</Text>
       </View>
 
       {variant === "tags" ? (
         <View style={styles.tagsContainer}>
-          {tagsQuery.data?.map((item) => (
-            <Pressable key={item} onPress={() => navToListItem(item)}>
+          {items.map((item) => (
+            <Pressable key={item.id} onPress={() => navToListItem(item)}>
               {renderItem({ item })}
             </Pressable>
           ))}
         </View>
       ) : (
-        <View style={styles.panel}>
-          {isLoading ? <LoadingState /> : null}
-          {isError ? <ErrorState /> : null}
-          {!isLoading && !isError ? (
-            <FlatList
-              style={{ width: "100%" }}
-              numColumns={2}
-              scrollEnabled={false}
-              data={
-                variant === "brands" ? brandsQuery.data : categoriesQuery.data
-              } // Esto se debe arreglar
-              keyExtractor={(item) => item}
-              contentContainerStyle={styles.listContent}
-              renderItem={({ item }) => (
-                /* <Pressable onPress={() => router.push("/ejemplos/fetch/temp")}> */
-                <Pressable
-                  style={styles.gridItem}
-                  onPress={() => navToListItem(item)}
-                >
-                  {renderItem({ item })}
-                </Pressable>
-              )}
-            />
-          ) : null}
-        </View>
-        /* <>
-          <FlatList
-            style={{ width: "100%" }}
-            data={ items}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            scrollEnabled={false}
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.gridItem}
-                onPress={() => navToListItem(item)}
-              >
-                {renderItem({ item })}
-              </Pressable>
-            )}
-          />
-        </> */
+        <FlatList
+          style={{ width: "100%" }}
+          data={items}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <Pressable
+              style={styles.gridItem}
+              onPress={() => navToListItem(item)}
+            >
+              {renderItem({ item })}
+            </Pressable>
+          )}
+        />
       )}
     </View>
   );
@@ -241,12 +187,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
-  },
-  listContent: {
-    gap: 10,
-  },
-  panel: {
-    flex: 1,
   },
   tagsContainer: {
     flexDirection: "row",

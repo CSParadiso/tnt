@@ -1,4 +1,3 @@
-import { Marca } from "@/models/marcas";
 import { Image } from "expo-image";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -39,7 +38,7 @@ const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 type BrandCardProps = {
-  item: Marca;
+  item: string;
 };
 
 /* export default function BrandCard({ item }: BrandCardProps) {
@@ -65,14 +64,14 @@ export default function BrandCard({ item }: BrandCardProps) {
         {/* Necesario para poder lograr la redondez */}
         <Image
           style={styles.image}
-          source={getLogo(item.id)}
+          source={getLogo(item)}
           placeholder={{ blurhash }}
           contentFit="contain"
           transition={1000}
         />
       </View>
 
-      <Text style={styles.title}>{item.nombre}</Text>
+      <Text style={styles.title}>{item}</Text>
     </View>
   );
 }

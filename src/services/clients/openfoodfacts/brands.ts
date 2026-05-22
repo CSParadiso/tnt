@@ -23,7 +23,7 @@ export const getFoodsByCategory = async (category: string): Promise<Food[]> => {
 };
  */
 
-export async function getTagsV3(query: string = ""): Promise<string[]> {
+export async function getBrandsV3(query: string = ""): Promise<string[]> {
   // El dominio world.openfoodfacts.org es el estándar
   const baseUrl = "https://world.openfoodfacts.net/api/v3/taxonomy_suggestions";
 
@@ -32,7 +32,7 @@ export async function getTagsV3(query: string = ""): Promise<string[]> {
   // lc: código de idioma (es para español)
   // string: el término de búsqueda
   const params = new URLSearchParams({
-    tagtype: "labels",
+    tagtype: "brands",
     lc: "es",
     string: query,
     limit: "20",
@@ -55,7 +55,7 @@ export async function getTagsV3(query: string = ""): Promise<string[]> {
 
   const data = await response.json();
 
-  //console.log(data);
+  console.log(data);
 
   return data.suggestions as string[];
 }

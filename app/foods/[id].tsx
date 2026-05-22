@@ -44,7 +44,7 @@ export default function FoodScreen() {
   const nutriscore_data_per = data?.nutrition_data_per;
   const ingredients = data?.ingredients_text_es;
 
-  console.log(JSON.stringify(data?.ingredients_text_es, null, 2));
+  //console.log(JSON.stringify(data?.ingredients_text_es, null, 2));
 
   // Vista
   return (
