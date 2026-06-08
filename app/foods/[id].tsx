@@ -1,10 +1,12 @@
+import { useFavorito } from "@/hooks/useFavorite";
 import { useFoodById } from "@/hooks/useFoods";
 import { NutriComponent } from "@/models/foods";
+import { Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import "react-native-reanimated";
 
 const blurhash =
@@ -15,36 +17,43 @@ type FichaScreenParams = {
 };
 export default function FoodScreen() {
   const { id } = useLocalSearchParams<FichaScreenParams>();
-  console.log("ID: ", id);
+  console.log("Food ID: ", id);
 
   // fetchear categorias
   const { data, isError, isFetching, isLoading } = useFoodById(id);
+  /* console.log(data); */
 
+  // Preguntar a Leo el workaround para ver la comida cuando viene desde la pantalla de favoritos y no está cacheada, o por que no peticviona
+
+  /* TODO: buscar los colores del nutriscore y machear con estos */
   const nutriscoreColor: Record<string, string> = {
-    a: "#038141",
-    b: "#85BB2F",
-    c: "#FECB02",
-    d: "#EE8100",
-    e: "#E63E11",
+    a: "#037c3e",
+    b: "#81b62e",
+    c: "#f7c302",
+    d: "#e67c01",
+    e: "#de3c0f",
   };
 
   const ecoscoreColor: Record<string, string> = {
     "a+": "#1E8F4E",
-    a: "#1E8F4E",
-    b: "#56A43A",
-    c: "#F5A623",
-    d: "#E07020",
-    e: "#CC1F1F",
+    a: "#037c3e",
+    b: "#81b62e",
+    c: "#f7c302",
+    d: "#e67c01",
+    e: "#de3c0f",
   };
 
   const nutri = data?.nutriscore_grade?.toLowerCase();
   const eco = data?.ecoscore_grade?.toLowerCase();
   const nova = data?.nova_group;
-  const nutriscore_data = data?.nutriscore_data.components;
+  const nutriscore_data = data?.nutriscore_data?.components;
   const nutriscore_data_per = data?.nutrition_data_per;
   const ingredients = data?.ingredients_text_es;
 
   //console.log(JSON.stringify(data?.ingredients_text_es, null, 2));
+
+  // Se separa el hook de los métodos accesores
+  const { isFavorito, toggleFavorito } = useFavorito(data);
 
   // Vista
   return (
@@ -61,6 +70,14 @@ export default function FoodScreen() {
         //contentFit="contain"
         transition={500}
       />
+      <Pressable onPressIn={toggleFavorito}>
+        <Ionicons
+          name={isFavorito ? "heart" : "heart-outline"}
+          size={40}
+          color="green"
+          style={styles.favorite}
+        />
+      </Pressable>
       <View
         style={{
           backgroundColor: "#f7f5f0",
@@ -123,12 +140,12 @@ export default function FoodScreen() {
           style={styles.horizontalScroll}
           contentContainerStyle={styles.horizontalContent}
         >
-          {nutriscore_data?.negative.map((item) => {
-            return <NutriDataHorizontal item={item}></NutriDataHorizontal>;
-          })}
-          {nutriscore_data?.positive.map((item) => {
-            return <NutriDataHorizontal item={item}></NutriDataHorizontal>;
-          })}
+          {nutriscore_data?.negative.map((item) => (
+            <NutriDataHorizontal key={item.id} item={item} />
+          ))}
+          {nutriscore_data?.positive.map((item) => (
+            <NutriDataHorizontal key={item.id} item={item} />
+          ))}
         </ScrollView>
       </View>
       <View style={styles.ingredientBox}>
@@ -189,12 +206,12 @@ export default function FoodScreen() {
         >
           Valores nutricionales (por {nutriscore_data_per})
         </Text>
-        {nutriscore_data?.negative.map((item) => {
-          return <NutriDataVertical item={item}></NutriDataVertical>;
-        })}
-        {nutriscore_data?.positive.map((item) => {
-          return <NutriDataVertical item={item}></NutriDataVertical>;
-        })}
+        {nutriscore_data?.negative.map((item) => (
+          <NutriDataVertical key={item.id} item={item} />
+        ))}
+        {nutriscore_data?.positive.map((item) => (
+          <NutriDataVertical key={item.id} item={item} />
+        ))}
       </View>
     </ScrollView>
   );
@@ -269,6 +286,15 @@ const styles = StyleSheet.create({
     padding: 10,
     marginLeft: 20,
     marginRight: 20,
+  },
+  favorite: {
+    //zIndex: 10,
+    marginTop: -70,
+    marginRight: 25,
+    alignSelf: "flex-end",
+    backgroundColor: "#f7f5f0",
+    borderRadius: 100,
+    padding: 10,
   },
   nutriBoxValue: {
     height: 30,

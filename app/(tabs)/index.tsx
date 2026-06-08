@@ -181,23 +181,6 @@ const SeccionList = ({
             />
           ) : null}
         </View>
-        /* <>
-          <FlatList
-            style={{ width: "100%" }}
-            data={ items}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            scrollEnabled={false}
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.gridItem}
-                onPress={() => navToListItem(item)}
-              >
-                {renderItem({ item })}
-              </Pressable>
-            )}
-          />
-        </> */
       )}
     </View>
   );

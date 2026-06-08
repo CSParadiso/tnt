@@ -93,7 +93,7 @@ export async function getFoodsByTaxonomy(
 
 export async function getFoodsById(code: string): Promise<Foods> {
   // El dominio world.openfoodfacts.org es el estándar
-  const BASE_URL = `https://world.openfoodfacts.org/api/v3/product${code}`;
+  const BASE_URL = `https://world.openfoodfacts.org/api/v3/product/${code}`;
 
   // Parámetros obligatorios en v3:
   // tagtype: qué tipo de datos queremos (categories)
@@ -121,6 +121,7 @@ export async function getFoodsById(code: string): Promise<Foods> {
 
   /* console.debug(`${BASE_URL}?${params.toString()}`);
   console.debug(data.products); */
+  console.log("Código de barras:", data.product.code);
 
-  return data;
+  return data.product;
 }

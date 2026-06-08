@@ -21,7 +21,7 @@ export function useFoods(taxonomy: Taxonomy, value: string) {
 
       // Agregamos cada comida a la caché ya que tiene los datos necesarios para la ficha
       foods.forEach((food) => {
-        queryClient.setQueryData(["food", food.id], food);
+        queryClient.setQueryData(["food", food.code], food);
       });
 
       return foods;
@@ -30,9 +30,11 @@ export function useFoods(taxonomy: Taxonomy, value: string) {
 }
 
 export function useFoodById(id: string) {
+  console.log("useFoodById called with:", id);
   return useQuery({
     queryKey: ["food", id],
     queryFn: () => getFoodsById(id), // only fires if not already in cache
+
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });

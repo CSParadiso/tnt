@@ -55,7 +55,7 @@ export async function getBrandsV3(query: string = ""): Promise<string[]> {
 
   const data = await response.json();
 
-  console.log(data);
+  /* console.log(data); */
 
   return data.suggestions as string[];
 }

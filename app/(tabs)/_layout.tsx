@@ -21,7 +21,7 @@ export default function RootLayout() {
 
         headerLeft: () => (
           <TouchableOpacity
-            onPress={() => console.log("menu")}
+            /* onPress={() => console.log("menu")} */
             style={{ marginLeft: 12 }}
           >
             <Ionicons name="menu" size={24} color="#1d3b1d" />
@@ -30,7 +30,7 @@ export default function RootLayout() {
 
         headerRight: () => (
           <TouchableOpacity
-            onPress={() => console.log("profile")}
+            /* onPress={() => console.log("profile")} */
             style={{ marginRight: 12 }}
           >
             <Ionicons name="person-circle-outline" size={24} color="#1d3b1d" />

@@ -21,7 +21,7 @@ type CategoryItemScreenParams = {
 
 export default function CategoryItemScreen() {
   const { id } = useLocalSearchParams<CategoryItemScreenParams>();
-  console.log("ID: ", id);
+  console.log("Categoría ID: ", id);
 
   return (
     <>

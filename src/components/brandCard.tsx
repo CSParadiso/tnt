@@ -58,13 +58,21 @@ type BrandCardProps = {
 } */
 
 export default function BrandCard({ item }: BrandCardProps) {
+  console.log(item);
+
   return (
     <View style={styles.container}>
       <View style={styles.logoWrapper}>
         {/* Necesario para poder lograr la redondez */}
         <Image
           style={styles.image}
-          source={getLogo(item)}
+          /* source={getLogo(item)} */
+          source={[
+            `https://logos.hunter.io/${item}.com`,
+            /* `https://logos.hunter.io/${item}.nl`,
+            `https://logos.hunter.io/${item}.fr`,
+            getLogo(item), // local asset as last resort */
+          ]}
           placeholder={{ blurhash }}
           contentFit="contain"
           transition={1000}
