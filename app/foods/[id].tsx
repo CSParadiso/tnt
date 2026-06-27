@@ -2,7 +2,6 @@ import { useFavorito } from "@/hooks/useFavorite";
 import { useFoodById } from "@/hooks/useFoods";
 import { NutriComponent } from "@/models/foods";
 import { Ionicons } from "@expo/vector-icons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -114,13 +113,13 @@ export default function FoodScreen() {
                 { backgroundColor: nutriscoreColor[nutri?.toString()] },
               ]}
             >
-              {nutri}
+              {nutri?.toUpperCase()}
             </Text>
           </View>
-          <View style={styles.nutriBox}>
+          {/* <View style={styles.nutriBox}>
             <Text>Nova-{"\n"}group</Text>
             <Text style={styles.nutriBoxValue}>{nova}</Text>
-          </View>
+          </View> */}
           <View style={styles.nutriBox}>
             <Text>Eco-{"\n"}score</Text>
             <Text
@@ -164,9 +163,9 @@ export default function FoodScreen() {
           <Text style={{ fontSize: 25 }}>Ingredientes</Text>
         </View>
         <Text style={{ fontSize: 15, marginTop: 10, marginBottom: 10 }}>
-          {ingredients ? ingredients : "Sin listado de ingredientres"}
+          {ingredients ? ingredients : "Sin ingredientres"}
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             backgroundColor: "#f6ecec",
@@ -193,7 +192,7 @@ export default function FoodScreen() {
               Falta identificar el campo alergias
             </Text>
           </View>
-        </View>
+        </View> */}
       </View>
 
       <View style={{ marginLeft: 20, marginRight: 20 }}>
