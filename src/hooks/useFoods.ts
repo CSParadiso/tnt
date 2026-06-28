@@ -29,12 +29,11 @@ export function useFoods(taxonomy: Taxonomy, value: string) {
   });
 }
 
-export function useFoodById(id: string) {
-  console.log("useFoodById called with:", id);
+export function useFoodById(id: string | null) {
   return useQuery({
     queryKey: ["food", id],
-    queryFn: () => getFoodsById(id), // only fires if not already in cache
-
+    queryFn: () => getFoodsById(id!),
+    enabled: !!id,
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
