@@ -1,6 +1,7 @@
 import { useFoodById } from "@/hooks/useFoods";
 import { Foods } from "@/models/foods";
 import { AppRoute, buildRoute, ROUTES } from "@/navigation/routes";
+import { Ionicons } from "@expo/vector-icons";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -25,7 +26,7 @@ export default function BarcodeScannerButton({ route = ROUTES.FOODS }: Props) {
   const [scanned, setScanned] = useState(false);
   const [facing, setFacing] = useState<CameraType>("back");
 
-  const { data: food, isLoading, error } = useFoodById(barcode);
+  const { data: food, isLoading } = useFoodById(barcode);
 
   const openScanner = () => {
     setBarcode(null);
@@ -40,7 +41,6 @@ export default function BarcodeScannerButton({ route = ROUTES.FOODS }: Props) {
 
   const handleBarcodeScanned = ({ data }: { type: string; data: string }) => {
     if (scanned) return;
-
     setScanned(true);
     setBarcode(data);
   };
@@ -56,7 +56,6 @@ export default function BarcodeScannerButton({ route = ROUTES.FOODS }: Props) {
 
   useEffect(() => {
     if (!scanned || isLoading) return;
-
     if (food) return;
 
     const timer = setTimeout(() => {
@@ -75,6 +74,7 @@ export default function BarcodeScannerButton({ route = ROUTES.FOODS }: Props) {
 
   return (
     <>
+      {/* BUTTON */}
       <TouchableOpacity
         style={styles.cameraButton}
         onPress={async () => {
@@ -82,21 +82,21 @@ export default function BarcodeScannerButton({ route = ROUTES.FOODS }: Props) {
             requestPermission();
             return;
           }
-
           openScanner();
         }}
       >
-        <Text style={styles.cameraIcon}>📷</Text>
+        <Ionicons name="scan-outline" size={24} color="#333" />
       </TouchableOpacity>
 
+      {/* MODAL */}
       <Modal
         visible={cameraVisible}
         animationType="slide"
         presentationStyle="fullScreen"
       >
-        <View style={styles.modalContainer}>
+        <View style={styles.container}>
           <CameraView
-            style={styles.camera}
+            style={StyleSheet.absoluteFill}
             facing={facing}
             barcodeScannerSettings={{
               barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e", "code128"],
@@ -104,50 +104,63 @@ export default function BarcodeScannerButton({ route = ROUTES.FOODS }: Props) {
             onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
           />
 
+          {/* DARK OVERLAY */}
+          <View style={styles.overlayMask} />
+
+          {/* SCAN FRAME */}
+          <View style={styles.scanFrame}>
+            <View style={styles.scanBox} />
+            <Text style={styles.scanText}>
+              Coloca el código dentro del marco
+            </Text>
+          </View>
+
+          {/* LOADING */}
           {isLoading && (
-            <View style={styles.overlay}>
-              <Text style={styles.text}>Buscando producto...</Text>
+            <View style={styles.statusPill}>
+              <Text style={styles.statusText}>Buscando producto...</Text>
             </View>
           )}
 
-          {food && (
-            <View style={styles.bottom}>
-              <TouchableOpacity
-                style={styles.productButton}
-                onPress={() => navToItem(food)}
-              >
-                <Text style={styles.text}>Ver producto</Text>
-              </TouchableOpacity>
+          {/* BOTTOM SHEET */}
+          <View style={styles.bottomSheet}>
+            {food ? (
+              <>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.primary]}
+                  onPress={() => navToItem(food)}
+                >
+                  <Text style={styles.actionText}>Ver producto</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.productButton}
-                onPress={() => {
-                  setBarcode(null);
-                  setScanned(false);
-                }}
-              >
-                <Text style={styles.text}>Escanear otro</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() => {
+                    setBarcode(null);
+                    setScanned(false);
+                  }}
+                >
+                  <Text style={styles.actionText}>Escanear otro</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={toggleCameraFacing}
+                >
+                  <Text style={styles.actionText}>Cambiar cámara</Text>
+                </TouchableOpacity>
 
-          {!food && (
-            <View style={styles.bottom}>
-              <TouchableOpacity
-                style={styles.productButton}
-                onPress={toggleCameraFacing}
-              >
-                <Text style={styles.text}>Cambiar cámara</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.productButton}
-                onPress={closeScanner}
-              >
-                <Text style={styles.text}>Cerrar</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.danger]}
+                  onPress={closeScanner}
+                >
+                  <Text style={styles.actionText}>Cerrar</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
         </View>
       </Modal>
     </>
@@ -156,50 +169,89 @@ export default function BarcodeScannerButton({ route = ROUTES.FOODS }: Props) {
 
 const styles = StyleSheet.create({
   cameraButton: {
-    height: 50,
-    width: 50,
+    height: 52,
+    width: 52,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
-    backgroundColor: "#eee",
+    borderRadius: 14,
+    backgroundColor: "#fff",
+    elevation: 3,
   },
 
-  cameraIcon: {
-    fontSize: 24,
-  },
-
-  modalContainer: {
+  container: {
     flex: 1,
   },
 
-  camera: {
-    flex: 1,
+  overlayMask: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.35)",
   },
 
-  overlay: {
+  scanFrame: {
+    position: "absolute",
+    top: "35%",
+    alignSelf: "center",
+    alignItems: "center",
+  },
+
+  scanBox: {
+    width: 240,
+    height: 160,
+    borderWidth: 2,
+    borderColor: "#00E676",
+    borderRadius: 16,
+  },
+
+  scanText: {
+    color: "#fff",
+    marginTop: 12,
+    fontSize: 14,
+    opacity: 0.8,
+  },
+
+  statusPill: {
     position: "absolute",
     top: 60,
     alignSelf: "center",
-    backgroundColor: "black",
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
 
-  bottom: {
+  statusText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+
+  bottomSheet: {
     position: "absolute",
-    bottom: 50,
-    alignSelf: "center",
-    gap: 15,
+    bottom: 0,
+    width: "100%",
+    padding: 20,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    gap: 10,
   },
 
-  productButton: {
-    backgroundColor: "#1976D2",
-    padding: 15,
-    borderRadius: 10,
+  actionButton: {
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: "#2C2C2C",
+    alignItems: "center",
   },
 
-  text: {
-    color: "white",
+  primary: {
+    backgroundColor: "#1B8D43",
+  },
+
+  danger: {
+    backgroundColor: "#D32F2F",
+  },
+
+  actionText: {
+    color: "#fff",
     fontWeight: "700",
   },
 });
