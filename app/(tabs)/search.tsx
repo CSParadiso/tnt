@@ -1,4 +1,4 @@
-import BarcodeScannerButton from "@/components/components/barcodeScannerButton";
+import BarcodeScannerButton from "@/components/barcodeScannerButton";
 import { ErrorState } from "@/components/errorState";
 import FoodCard from "@/components/foodCard";
 import { LoadingState } from "@/components/loadingState";
@@ -7,15 +7,27 @@ import { Foods } from "@/models/foods";
 import { AppRoute, buildRoute, ROUTES } from "@/navigation/routes";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function InputFilter() {
   const [text, setText] = useState("");
   const [debouncedText, setDebouncedText] = useState("");
+  const [totalResults, setTotalResults] = useState(0);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedText(text);
+
+      if (text.trim().length <= 1) {
+        setTotalResults(0);
+      }
     }, 400);
 
     return () => clearTimeout(timeout);
@@ -34,8 +46,18 @@ export default function InputFilter() {
         <BarcodeScannerButton />
       </View>
 
+      {totalResults > 0 && (
+        <Text style={styles.resultsText}>
+          {totalResults} resultados para "{debouncedText}"
+        </Text>
+      )}
+
       {debouncedText.trim().length > 1 ? (
-        <SearchResults search={debouncedText} route={ROUTES.FOODS} />
+        <SearchResults
+          search={debouncedText}
+          route={ROUTES.FOODS}
+          onResultsChange={setTotalResults}
+        />
       ) : null}
     </View>
   );
@@ -44,9 +66,10 @@ export default function InputFilter() {
 type SearchResultsProps = {
   search: string;
   route: AppRoute;
+  onResultsChange: (count: number) => void;
 };
 
-function SearchResults({ search, route }: SearchResultsProps) {
+function SearchResults({ search, route, onResultsChange }: SearchResultsProps) {
   const categories = useInfiniteFoods("category", search);
   const brands = useInfiniteFoods("brand", search);
   const tags = useInfiniteFoods("tag", search);
@@ -78,6 +101,15 @@ function SearchResults({ search, route }: SearchResultsProps) {
       ]),
     ).values(),
   );
+
+  useEffect(() => {
+    const total =
+      (categories.data?.pages[0]?.count ?? 0) +
+      (brands.data?.pages[0]?.count ?? 0) +
+      (tags.data?.pages[0]?.count ?? 0);
+
+    onResultsChange(total);
+  }, [categories.data, brands.data, tags.data]);
 
   console.debug(foods.length);
 
@@ -147,5 +179,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  resultsText: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
