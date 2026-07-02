@@ -56,161 +56,122 @@ export default function FoodScreen() {
 
   // Vista
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={{ paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
       <Stack.Screen
         options={{
           headerTitle: data?.product_name,
         }}
       />
-      <Image
-        style={styles.image}
-        source={data?.image_front_small_url}
-        placeholder={{ blurhash }}
-        //contentFit="contain"
-        transition={500}
-      />
-      <Pressable onPressIn={toggleFavorito}>
-        <Ionicons
-          name={isFavorito ? "heart" : "heart-outline"}
-          size={40}
-          color="green"
-          style={styles.favorite}
+      <View style={styles.hero}>
+        <Image
+          style={styles.image}
+          source={data?.image_front_small_url}
+          placeholder={{ blurhash }}
+          contentFit="contain"
+          transition={500}
         />
-      </Pressable>
-      <View
-        style={{
-          backgroundColor: "#f7f5f0",
-          borderRadius: 40,
-          zIndex: 3,
-          marginTop: -40,
-          //width: 350,
-          marginLeft: 20,
-          marginRight: 20,
-          elevation: 1,
-        }}
-      >
-        <View style={{ padding: 12 }}>
-          <Text style={{ fontSize: 20, color: "green", paddingTop: 12 }}>
-            {data?.brands}
-          </Text>
-          <Text style={{ fontSize: 35, fontWeight: 600 }}>
-            {data?.product_name}
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-            //backgroundColor: "red",
-          }}
-        >
-          <View style={styles.nutriBox}>
-            <Text>Nutri-{"\n"}score</Text>
-            <Text
+
+        <Pressable onPress={toggleFavorito} style={styles.favoriteButton}>
+          <Ionicons
+            name={isFavorito ? "heart" : "heart-outline"}
+            size={28}
+            color="#1B8D43"
+          />
+        </Pressable>
+      </View>
+      <View style={styles.productCard}>
+        <Text style={styles.brand}>{data?.brands?.toUpperCase()}</Text>
+
+        <Text style={styles.title}>{data?.product_name}</Text>
+
+        <View style={styles.scoreRow}>
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>NUTRI{"\n"}SCORE</Text>
+
+            <View
               style={[
-                styles.nutriBoxValue,
-                { backgroundColor: nutriscoreColor[nutri?.toString()] },
-              ]}
-            >
-              {nutri?.toUpperCase()}
-            </Text>
-          </View>
-          {/* <View style={styles.nutriBox}>
-            <Text>Nova-{"\n"}group</Text>
-            <Text style={styles.nutriBoxValue}>{nova}</Text>
-          </View> */}
-          <View style={styles.nutriBox}>
-            <Text>Eco-{"\n"}score</Text>
-            <Text
-              style={[
-                styles.nutriBoxValue,
+                styles.scoreBadge,
                 {
-                  backgroundColor: ecoscoreColor[eco?.toString()] ?? "#aaa",
+                  backgroundColor: nutriscoreColor[nutri ?? "a"],
                 },
               ]}
             >
-              {eco}
-            </Text>
+              <Text style={styles.scoreLetter}>{nutri?.toUpperCase()}</Text>
+            </View>
+          </View>
+
+          {/* <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>NOVA{"\n"}GROUP</Text>
+
+            <View style={[styles.scoreBadge, { backgroundColor: "#FFC928" }]}>
+              <Text style={styles.scoreLetter}>{nova}</Text>
+            </View>
+          </View> */}
+
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>ECO{"\n"}SCORE</Text>
+
+            <View
+              style={[
+                styles.scoreBadge,
+                {
+                  backgroundColor: ecoscoreColor[eco ?? "a"],
+                },
+              ]}
+            >
+              <Text style={styles.scoreLetter}>{eco?.toUpperCase()}</Text>
+            </View>
           </View>
         </View>
+
         <ScrollView
           horizontal
-          style={styles.horizontalScroll}
-          contentContainerStyle={styles.horizontalContent}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsContainer}
         >
           {nutriscore_data?.negative.map((item) => (
             <NutriDataHorizontal key={item.id} item={item} />
           ))}
+
           {nutriscore_data?.positive.map((item) => (
             <NutriDataHorizontal key={item.id} item={item} />
           ))}
         </ScrollView>
       </View>
-      <View style={styles.ingredientBox}>
-        <View
-          style={{
-            flexDirection: "row",
-            padding: 10,
-          }}
-        >
-          <MaterialIcons
-            name="restaurant-menu"
-            size={24}
-            color="green"
-            style={{ marginRight: 10 }}
-          />
-          <Text style={{ fontSize: 25 }}>Ingredientes</Text>
+      <View style={styles.sectionCard}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons name="restaurant-menu" size={24} color="#1B8D43" />
+
+          <Text style={styles.sectionTitle}>Ingredientes</Text>
         </View>
-        <Text style={{ fontSize: 15, marginTop: 10, marginBottom: 10 }}>
-          {ingredients ? ingredients : "Sin ingredientres"}
+
+        <Text style={styles.ingredients}>
+          {ingredients ?? "Sin ingredientes"}
         </Text>
-        {/* <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#f6ecec",
-            padding: 10,
-          }}
-        >
-          <MaterialCommunityIcons
-            name="alert"
-            size={24}
-            color="red"
-            style={{ marginRight: 10 }}
-          />
-          <View>
-            <Text
-              style={{
-                color: "#bc0303",
-                fontWeight: 600,
-                textTransform: "uppercase",
-              }}
-            >
-              Información de alergias
-            </Text>
-            <Text style={{ color: "#bc0303" }}>
-              Falta identificar el campo alergias
-            </Text>
-          </View>
-        </View> */}
       </View>
 
-      <View style={{ marginLeft: 20, marginRight: 20 }}>
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: 500,
-            marginBlock: 10,
-          }}
-        >
-          Valores nutricionales (por {nutriscore_data_per})
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>
+          Valores nutricionales ({nutriscore_data_per})
         </Text>
-        {nutriscore_data?.negative.map((item) => (
-          <NutriDataVertical key={item.id} item={item} />
-        ))}
-        {nutriscore_data?.positive.map((item) => (
-          <NutriDataVertical key={item.id} item={item} />
-        ))}
+
+        {!nutriscore_data ? (
+          <Text style={styles.ingredients}>Sin información nutricional</Text>
+        ) : (
+          <>
+            {nutriscore_data?.negative?.map((item) => (
+              <NutriDataVertical key={item.id} item={item} />
+            ))}
+
+            {nutriscore_data?.positive?.map((item) => (
+              <NutriDataVertical key={item.id} item={item} />
+            ))}
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -222,17 +183,10 @@ type NutriDataProps = {
 
 function NutriDataHorizontal({ item }: NutriDataProps) {
   return (
-    <View
-      style={{
-        backgroundColor: "#c6e9be",
-        alignItems: "center",
-        borderRadius: 10,
-        //paddingBlock: 5,
-        padding: 5,
-      }}
-    >
-      <Text>{item.id}</Text>
-      <Text>
+    <View style={styles.chip}>
+      <Text style={styles.chipTitle}>{item.id.toUpperCase()}</Text>
+
+      <Text style={styles.chipValue}>
         {item.value}
         {item.unit}
       </Text>
@@ -242,16 +196,12 @@ function NutriDataHorizontal({ item }: NutriDataProps) {
 
 function NutriDataVertical({ item }: NutriDataProps) {
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBlock: 5,
-      }}
-    >
-      <Text>{item.id.charAt(0).toUpperCase() + item.id.slice(1)}</Text>
-      <Text>
+    <View style={styles.tableRow}>
+      <Text style={styles.tableLabel}>
+        {item.id.charAt(0).toUpperCase() + item.id.slice(1)}
+      </Text>
+
+      <Text style={styles.tableValue}>
         {item.value}
         {item.unit}
       </Text>
@@ -314,9 +264,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    //width: "100%",
-    height: 200,
-    backgroundColor: "yellow",
+    width: "70%",
+    height: "100%",
   },
   listBlock: {
     width: "100%",
@@ -325,5 +274,156 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 30,
+  },
+  screen: {
+    flex: 1,
+    backgroundColor: "#F4F4F4",
+  },
+
+  hero: {
+    height: 340,
+    backgroundColor: "#FF775F",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  productCard: {
+    marginTop: -45,
+    marginHorizontal: 20,
+    backgroundColor: "#FFF",
+    borderRadius: 30,
+    padding: 24,
+    elevation: 6,
+  },
+
+  brand: {
+    fontSize: 13,
+    color: "#1B8D43",
+    fontWeight: "700",
+    letterSpacing: 1.5,
+  },
+
+  title: {
+    fontSize: 36,
+    fontWeight: "700",
+    color: "#222",
+    marginTop: 8,
+  },
+
+  scoreRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 25,
+  },
+
+  scoreCard: {
+    width: 92,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+    alignItems: "center",
+    paddingVertical: 14,
+  },
+
+  scoreLabel: {
+    fontSize: 11,
+    color: "#666",
+    textAlign: "center",
+  },
+
+  scoreBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  scoreLetter: {
+    color: "#FFF",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+
+  chipsContainer: {
+    paddingTop: 25,
+    gap: 12,
+  },
+
+  chip: {
+    backgroundColor: "#DDF2D7",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minWidth: 90,
+  },
+
+  chipTitle: {
+    fontSize: 12,
+    color: "#5E5E5E",
+  },
+
+  chipValue: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 4,
+  },
+
+  favoriteButton: {
+    position: "absolute",
+    right: 25,
+    bottom: -28,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+  },
+
+  sectionCard: {
+    marginHorizontal: 20,
+    marginTop: 24,
+    backgroundColor: "#FFF",
+    borderRadius: 24,
+    padding: 22,
+    elevation: 3,
+  },
+
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 15,
+  },
+
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+  },
+
+  ingredients: {
+    fontSize: 16,
+    lineHeight: 28,
+    color: "#444",
+  },
+
+  tableRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EFEFEF",
+  },
+
+  tableLabel: {
+    fontSize: 16,
+    color: "#444",
+  },
+
+  tableValue: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
