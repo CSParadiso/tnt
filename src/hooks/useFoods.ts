@@ -1,9 +1,14 @@
 import {
   getFoodsById,
   getFoodsByTaxonomy,
+  getFoodsByTaxonomyInfinite,
   getFoodsByTaxonomyName,
 } from "@/services/clients/openfoodfacts/foods";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export type Taxonomy = "category" | "tag" | "brand";
 
@@ -26,6 +31,39 @@ export function useFoods(taxonomy: Taxonomy, value: string) {
       });
 
       return foods;
+    },
+  });
+}
+
+export function useInfiniteFoods(taxonomy: Taxonomy, value: string) {
+  const queryClient = useQueryClient();
+
+  return useInfiniteQuery({
+    queryKey: ["foods", taxonomy, value],
+
+    enabled: value.trim().length > 1,
+
+    initialPageParam: 1,
+
+    queryFn: async ({ pageParam }) => {
+      const response = await getFoodsByTaxonomyInfinite(
+        taxonomy,
+        value,
+        pageParam,
+        10,
+      );
+
+      response.products.forEach((food) => {
+        queryClient.setQueryData(["food", food.code], food);
+      });
+
+      return response;
+    },
+
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage.page + 1;
+
+      return nextPage <= lastPage.page_count ? nextPage : undefined;
     },
   });
 }

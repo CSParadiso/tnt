@@ -92,6 +92,80 @@ export async function getFoodsByTaxonomy(
   return data.products;
 }
 
+type FoodsSearchResponse = {
+  products: Foods[];
+  page: number;
+  page_count: number;
+  count: number;
+  page_size: number;
+};
+
+export async function getFoodsByTaxonomyInfinite(
+  taxonomy: Taxonomy,
+  value: string,
+  page = 1,
+  pageSize = 10,
+): Promise<FoodsSearchResponse> {
+  // Agregar guiones para evitar los espacios en la URL
+  value = value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+  // Parámetros comunes para todos los endpoints
+  const commonParams = {
+    tagtype: "foods",
+    lc: "es",
+    page: page.toString(),
+    page_size: pageSize.toString(),
+  };
+
+  // El dominio world.openfoodfacts.org es el estándar
+  const BASE_URL = `https://world.openfoodfacts.net/api/v2/search`;
+  //const BASE_URL = `https://world.openfoodfacts.org/api/v2/search`;
+
+  // Parámetros obligatorios en v3:
+  // tagtype: qué tipo de datos queremos (categories)
+  // lc: código de idioma (es para español)
+  // string: el término de búsqueda
+  // Si es categoria
+  const params =
+    taxonomy === "category"
+      ? new URLSearchParams({
+          ...commonParams,
+          categories_tags_es: value,
+        })
+      : taxonomy === "brand"
+        ? new URLSearchParams({
+            ...commonParams,
+            brands_tags: value,
+          })
+        : new URLSearchParams({
+            ...commonParams,
+            labels_tags: value,
+          });
+  // tagtype=foods&lc=es&string={query}&limit=20
+
+  const response = await fetch(`${BASE_URL}?${params.toString()}`, {
+    headers: {
+      "User-Agent": "tnt-2026-UNTDF", // OFF
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  /* console.debug(`${BASE_URL}?${params.toString()}`);*/
+  console.debug(data.products);
+
+  return data;
+}
+
 export async function getFoodsByTaxonomyName(
   value: string,
   query: string = "",
