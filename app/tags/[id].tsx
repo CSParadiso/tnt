@@ -1,18 +1,11 @@
 import { ErrorState } from "@/components/errorState";
 import FoodCard from "@/components/foodCard";
 import { LoadingState } from "@/components/loadingState";
-import { useFoods } from "@/hooks/useFoods";
+import { useInfiniteFoods } from "@/hooks/useFoods";
 import { Foods } from "@/models/foods";
 import { AppRoute, buildRoute, ROUTES } from "@/navigation/routes";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import {
-  FlatList,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { FlatList, Pressable, StyleSheet, Text } from "react-native";
 import "react-native-reanimated";
 
 type TagsItemScreenParams = {
@@ -24,70 +17,72 @@ export default function TagsItemScreen() {
   const rawId = Array.isArray(id) ? id[0] : id;
   const title = rawId.charAt(0).toUpperCase() + rawId.slice(1);
 
-  // No fetch here — SeccionList handles it internally
-
   return (
     <>
       <Stack.Screen options={{ title }} />
-      <ScrollView contentContainerStyle={styles.container}>
-        <SeccionList
-          title={title}
-          rawId={rawId} // pass rawId so SeccionList can fetch
-          subtitle=""
-          route={ROUTES.FOODS}
-        />
-      </ScrollView>
+      <SeccionList
+        rawId={rawId} // pass rawId so SeccionList can fetch
+        route={ROUTES.FOODS}
+      />
     </>
   );
 }
 
-type SectionListProps = {
-  title: string;
+type SeccionListProps = {
   rawId: string; // added
-  subtitle: string;
   route: AppRoute;
 };
 
-const SeccionList = ({ title, rawId, subtitle, route }: SectionListProps) => {
-  const router = useRouter();
+function SeccionList({ rawId, route }: SeccionListProps) {
+  const Tags = useInfiniteFoods("tag", rawId); // fetch here
 
-  const { data, isError, isLoading } = useFoods("tag", rawId); // fetch here
+  const totalResults = Tags.data?.pages[0]?.count ?? 0;
+
+  const TagFoods = Tags.data?.pages.flatMap((page) => page.products) ?? [];
+
+  console.debug("Etiquetas", TagFoods.length);
+  const isLoading = Tags.isLoading;
+
+  const isError = Tags.isError;
+
+  const foods = Array.from(
+    new Map([...TagFoods].map((food) => [food.code, food])).values(),
+  );
 
   const navToItem = (item: Foods) => {
     router.push(buildRoute(route, { id: item.code }));
   };
 
-  return (
-    <View style={styles.listBlock}>
-      <View style={styles.listTitleRow}>
-        <Text style={styles.listTitle}>{title}</Text>
-        <Text style={styles.listSubtitle}>{subtitle}</Text>
-      </View>
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
-      <View style={styles.panel}>
-        {isLoading ? <LoadingState /> : null}
-        {isError ? <ErrorState /> : null}
-        {!isLoading && !isError ? (
-          <FlatList
-            style={{ width: "100%" }}
-            scrollEnabled={false}
-            data={data}
-            keyExtractor={(item) => item.code}
-            contentContainerStyle={styles.listContent}
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.gridItem}
-                onPress={() => navToItem(item)}
-              >
-                <FoodCard food={item} />
-              </Pressable>
-            )}
-          />
-        ) : null}
-      </View>
-    </View>
+  if (isError) {
+    return <ErrorState />;
+  }
+
+  return (
+    <FlatList
+      ListHeaderComponent={
+        <Text style={styles.resultsText}>{totalResults} resultados</Text>
+      }
+      data={foods}
+      keyExtractor={(item) => item.code}
+      contentContainerStyle={styles.listContent}
+      renderItem={({ item }) => (
+        <Pressable style={styles.gridItem} onPress={() => navToItem(item)}>
+          <FoodCard food={item} />
+        </Pressable>
+      )}
+      onEndReached={() => {
+        if (Tags.hasNextPage && !Tags.isFetchingNextPage) {
+          Tags.fetchNextPage();
+        }
+      }}
+      onEndReachedThreshold={0.5}
+    />
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -153,5 +148,11 @@ const styles = StyleSheet.create({
   welcomeMessage: {
     fontSize: 28,
     fontWeight: 600,
+  },
+  resultsText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 12,
+    marginTop: 12,
   },
 });
