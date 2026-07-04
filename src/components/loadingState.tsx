@@ -4,7 +4,7 @@ export function LoadingState() {
   return (
     <View style={styles.centeredState}>
       <ActivityIndicator size="large" color="#7c2d12" />
-      <Text style={styles.stateText}>TanStack Query está cargando...</Text>
+      <Text style={styles.stateText}>Buscando alimentos...</Text>
     </View>
   );
 }

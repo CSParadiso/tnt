@@ -2,7 +2,7 @@ import BarcodeScannerButton from "@/components/barcodeScannerButton";
 import { ErrorState } from "@/components/errorState";
 import FoodCard from "@/components/foodCard";
 import { LoadingState } from "@/components/loadingState";
-import { useInfiniteFoods } from "@/hooks/useFoods";
+import { useFoodById, useInfiniteFoods } from "@/hooks/useFoods";
 import { Foods } from "@/models/foods";
 import { AppRoute, buildRoute, ROUTES } from "@/navigation/routes";
 import { router } from "expo-router";
@@ -20,12 +20,24 @@ export default function InputFilter() {
   const [text, setText] = useState("");
   const [debouncedText, setDebouncedText] = useState("");
   const [totalResults, setTotalResults] = useState(0);
+  // Verificar si es un número de código de barras válido (8, 12, 13 o 14 dígitos)
+  // Nos evita utilizar los otros endpoints en un cuircuit breaker
+  // Limpia esoacios en codigo de barras
+  const search = debouncedText.trim();
+
+  const isBarcode = /^\d{8,14}$/.test(search);
+
+  const {
+    data: barcodeFood,
+    isLoading: barcodeLoading,
+    isError: barcodeError,
+  } = useFoodById(isBarcode ? debouncedText : null);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedText(text);
 
-      if (text.trim().length <= 1) {
+      if (text.trim().length <= 1 || /^\d{8,14}$/.test(text.trim())) {
         setTotalResults(0);
       }
     }, 400);
@@ -46,19 +58,37 @@ export default function InputFilter() {
         <BarcodeScannerButton />
       </View>
 
-      {totalResults > 0 && (
+      {!isBarcode && totalResults > 0 && (
         <Text style={styles.resultsText}>
           {totalResults} resultados para "{debouncedText}"
         </Text>
       )}
 
-      {debouncedText.trim().length > 1 ? (
-        <SearchResults
-          search={debouncedText}
-          route={ROUTES.FOODS}
-          onResultsChange={setTotalResults}
-        />
-      ) : null}
+      {debouncedText.trim().length > 1 &&
+        (isBarcode ? (
+          barcodeLoading ? (
+            <LoadingState />
+          ) : barcodeError ? (
+            <ErrorState />
+          ) : barcodeFood ? (
+            <Pressable
+              style={styles.gridItem}
+              onPress={() =>
+                router.push(buildRoute(ROUTES.FOODS, { id: barcodeFood.code }))
+              }
+            >
+              <FoodCard food={barcodeFood} />
+            </Pressable>
+          ) : (
+            <Text style={styles.resultsText}>Producto no encontrado</Text>
+          )
+        ) : (
+          <SearchResults
+            search={debouncedText}
+            route={ROUTES.FOODS}
+            onResultsChange={setTotalResults}
+          />
+        ))}
     </View>
   );
 }
