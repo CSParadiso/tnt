@@ -1,30 +1,33 @@
 import { Foods } from "@/models/foods";
+import { useAuth } from "@/context/AuthProvider";
 import {
   eliminarFavorito,
   guardarFavorito,
-  obtenerFavoritos,
+  suscribirFavorito,
 } from "@/services/accessors/favorites";
 import { useEffect, useState } from "react";
 
 export function useFavorito(food: Foods | undefined) {
+  const { user } = useAuth();
   const [isFavorito, setIsFavorito] = useState(false);
 
   useEffect(() => {
-    if (!food?.code) return; // guard before any access
-    obtenerFavoritos().then((favoritos) => {
-      setIsFavorito(favoritos.some((f) => f.code === food.code));
-    });
-  }, [food?.code]); // optional chain here too
+    if (!user || !food?.code) {
+      setIsFavorito(false);
+      return;
+    }
+
+    const unsubscribe = suscribirFavorito(food.code, user.uid, setIsFavorito);
+    return () => unsubscribe();
+  }, [user, food?.code]);
 
   async function toggleFavorito() {
-    if (!food?.code) return; // guard before any access
+    if (!user || !food?.code) return;
     try {
       if (isFavorito) {
-        await eliminarFavorito(food.code);
-        setIsFavorito(false);
+        await eliminarFavorito(food.code, user.uid);
       } else {
-        await guardarFavorito(food);
-        setIsFavorito(true);
+        await guardarFavorito(food, user.uid);
       }
     } catch (error) {
       console.error("Error al guardar/eliminar favorito", error);

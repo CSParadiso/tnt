@@ -1,10 +1,11 @@
 import { useFavorito } from "@/hooks/useFavorite";
 import { useFoodById } from "@/hooks/useFoods";
+import { useAuth } from "@/context/AuthProvider";
 import { NutriComponent } from "@/models/foods";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import "react-native-reanimated";
 
@@ -53,6 +54,15 @@ export default function FoodScreen() {
 
   // Se separa el hook de los métodos accesores
   const { isFavorito, toggleFavorito } = useFavorito(data);
+  const { user } = useAuth();
+
+  function handleFavoritePress() {
+    if (!user) {
+      router.push("/(auth)/login");
+      return;
+    }
+    toggleFavorito();
+  }
 
   // Vista
   return (
@@ -75,7 +85,7 @@ export default function FoodScreen() {
           transition={500}
         />
 
-        <Pressable onPress={toggleFavorito} style={styles.favoriteButton}>
+        <Pressable onPress={handleFavoritePress} style={styles.favoriteButton}>
           <Ionicons
             name={isFavorito ? "heart" : "heart-outline"}
             size={28}
@@ -285,6 +295,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF775F",
     justifyContent: "center",
     alignItems: "center",
+    overflow: "visible",
   },
 
   productCard: {
@@ -380,6 +391,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 8,
+    zIndex: 10,
   },
 
   sectionCard: {
