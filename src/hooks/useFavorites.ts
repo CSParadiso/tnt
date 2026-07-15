@@ -1,46 +1,63 @@
 import { Foods } from "@/models/foods";
+import { useAuth } from "@/context/AuthProvider";
 import {
   eliminarFavorito,
-  esFavorito,
   guardarFavorito,
-  obtenerFavoritos,
+  suscribirFavoritos,
+  suscribirFavorito,
 } from "@/services/accessors/favorites";
 import { useEffect, useState } from "react";
 
-// For the favorites list screen
 export function useFavoritos() {
+  const { user } = useAuth();
   const [favoritos, setFavoritos] = useState<Foods[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    obtenerFavoritos()
-      .then(setFavoritos)
-      .finally(() => setIsLoading(false));
-  }, []);
+    if (!user) {
+      setFavoritos([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    const unsubscribe = suscribirFavoritos(user.uid, (data) => {
+      setFavoritos(data);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   async function eliminar(code: string) {
-    await eliminarFavorito(code);
-    setFavoritos((prev) => prev.filter((f) => f.code !== code));
+    if (!user) return;
+    await eliminarFavorito(code, user.uid);
   }
 
   return { favoritos, isLoading, eliminar };
 }
 
-// For a single food item (detail/card toggle)
 export function useFavorito(food: Foods) {
+  const { user } = useAuth();
   const [isFavorito, setIsFavorito] = useState(false);
 
   useEffect(() => {
-    esFavorito(food.code).then(setIsFavorito);
-  }, [food.code]);
+    if (!user || !food?.code) {
+      setIsFavorito(false);
+      return;
+    }
+
+    const unsubscribe = suscribirFavorito(food.code, user.uid, setIsFavorito);
+    return () => unsubscribe();
+  }, [user, food?.code]);
 
   async function toggleFavorito() {
+    if (!user || !food?.code) return;
     if (isFavorito) {
-      await eliminarFavorito(food.code);
+      await eliminarFavorito(food.code, user.uid);
     } else {
-      await guardarFavorito(food);
+      await guardarFavorito(food, user.uid);
     }
-    setIsFavorito((prev) => !prev);
   }
 
   return { isFavorito, toggleFavorito };

@@ -1,9 +1,11 @@
 import FoodCard from "@/components/foodCard";
 import { LoadingState } from "@/components/loadingState";
+import { useAuth } from "@/context/AuthProvider";
 import { useFavoritos } from "@/hooks/useFavorites";
 import { Foods } from "@/models/foods";
 import { AppRoute, buildRoute, ROUTES } from "@/navigation/routes";
-import { Stack, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Link, Stack, useRouter } from "expo-router";
 import {
   FlatList,
   Pressable,
@@ -15,6 +17,44 @@ import {
 import "react-native-reanimated";
 
 export default function FavsItemScreen() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "Favoritos" }} />
+        <View style={styles.centered}>
+          <LoadingState />
+        </View>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "Favoritos" }} />
+        <View style={styles.centered}>
+          <Ionicons name="heart-outline" size={64} color="#ccc" />
+          <Text style={styles.promptTitle}>Inicia sesion para ver tus favoritos</Text>
+          <Text style={styles.promptSubtitle}>
+            Guarda tus productos favoritos y sincronizalos entre dispositivos.
+          </Text>
+          <Link href="/(auth)/login" asChild>
+            <Pressable style={styles.loginButton}>
+              <Text style={styles.loginButtonText}>Iniciar sesion</Text>
+            </Pressable>
+          </Link>
+          <Link href="/(auth)/signup" asChild>
+            <Pressable style={styles.signupButton}>
+              <Text style={styles.signupButtonText}>Crear cuenta</Text>
+            </Pressable>
+          </Link>
+        </View>
+      </>
+    );
+  }
+
   return (
     <>
       <Stack.Screen options={{ title: "Favoritos" }} />
@@ -33,15 +73,9 @@ type SectionListProps = {
 
 const SeccionList = ({ title, subtitle, route }: SectionListProps) => {
   const router = useRouter();
-  /* obtenerFavoritos().then((favs) =>
-    console.log("Stored favorites:", JSON.stringify(favs[0].code))
-  ); */
-
   const { favoritos, isLoading, eliminar } = useFavoritos();
 
   const navToItem = (item: Foods) => {
-    console.log("Código de barras ítem:", item.code);
-
     router.push(buildRoute(route, { id: item.code }));
   };
 
@@ -82,8 +116,51 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
     paddingHorizontal: 16,
     flexDirection: "column",
-    /* alignItems: "center", */
     gap: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 32,
+    gap: 16,
+  },
+  promptTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  promptSubtitle: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    lineHeight: 24,
+  },
+  loginButton: {
+    backgroundColor: "#1B8D43",
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  loginButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  signupButton: {
+    borderWidth: 1,
+    borderColor: "#1B8D43",
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+  },
+  signupButtonText: {
+    color: "#1B8D43",
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
   },
   gridItem: {
     flex: 1,
@@ -91,7 +168,6 @@ const styles = StyleSheet.create({
   },
   listBlock: {
     width: "100%",
-    //maxWidth: 420,
     gap: 12,
   },
   panel: {
