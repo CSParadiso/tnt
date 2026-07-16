@@ -14,19 +14,24 @@
 
 ### Tecnologías utilizadas
 
-| Tecnología | Versión | Uso |
-|------------|---------|-----|
-| Expo SDK | 55 | Framework de desarrollo |
-| React Native | 0.83 | Interface de usuario |
-| Expo Router | 55 | Navegación basada en archivos |
-| Firebase Authentication | 12.15 | Autenticación de usuarios |
-| Firebase Realtime Database | 12.15 | Sincronización en tiempo real |
-| React Query | 5.100 | Gestión de estado asíncrono |
-| TypeScript | 5.9 | Tipado estático |
+| Tecnología                 | Versión | Uso                           |
+| -------------------------- | ------- | ----------------------------- |
+| Expo SDK                   | 55      | Framework de desarrollo       |
+| React Native               | 0.83    | Interface de usuario          |
+| Expo Router                | 55      | Navegación basada en archivos |
+| Firebase Authentication    | 12.15   | Autenticación de usuarios     |
+| Firebase Realtime Database | 12.15   | Sincronización en tiempo real |
+| React Query                | 5.100   | Gestión de estado asíncrono   |
+| TypeScript                 | 5.9     | Tipado estático               |
 
 ### Capturas de pantalla
 
-[INSERTAR CAPTURAS DE PANTALLA AQUÍ]
+!(Pantalla de inicio)[docs/home.jpeg]
+!(Búsqueda de productos)[docs/busqueda.jpeg]
+!(Escaneo de códigos de barra)[docs/bar-scan.jpeg]
+!(Fichad e producto)[docs/producto.jpeg]
+!(Favoritos)[docs/favoritos.jpeg]
+!(Login)[docs/login.jpeg]
 
 ---
 
@@ -50,8 +55,8 @@ Firebase Authentication proporciona una solución completa para autenticar usuar
 Se utilizó `initializeAuth` con `getReactNativePersistence(AsyncStorage)` para que la sesión se mantenga entre cierres de la aplicación:
 
 ```typescript
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
@@ -290,9 +295,9 @@ tnt-alimentos/
 
 ### Solución de problemas
 
-| Problema | Solución |
-|----------|----------|
-| Error "permission_denied" | Verificar reglas de Firebase RTDB |
-| Login no persiste | Verificar `initializeAuth` con AsyncStorage |
-| App no carga | Ejecutar `npm install` nuevamente |
-| Errores de TypeScript | Ejecutar `npx tsc --noEmit` |
+| Problema                  | Solución                                    |
+| ------------------------- | ------------------------------------------- |
+| Error "permission_denied" | Verificar reglas de Firebase RTDB           |
+| Login no persiste         | Verificar `initializeAuth` con AsyncStorage |
+| App no carga              | Ejecutar `npm install` nuevamente           |
+| Errores de TypeScript     | Ejecutar `npx tsc --noEmit`                 |
