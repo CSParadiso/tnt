@@ -1,3 +1,38 @@
+<div align="center">
+
+<img src="docs/untdf.png" alt="Logo de la Universidad Nacional de Tierra del Fuego" width="500">
+
+<br>
+
+# Taller de Nuevas Tecnologías
+
+<br>
+
+## Paradiso, Cayetano Simón
+
+</div>
+
+<br>
+
+- Repositorio: <a target="_blank" href="https://github.com/CSParadiso/tnt.git">TNT</a><br>
+- Docente: Viera, Leonel Ezequiel<br>
+- Año de cursada: 2026
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 # TNT Alimentos
 
 ## 1. Resumen del proyecto
@@ -26,12 +61,10 @@
 
 ### Capturas de pantalla
 
-!(Pantalla de inicio)[docs/home.jpeg]
-!(Búsqueda de productos)[docs/busqueda.jpeg]
-!(Escaneo de códigos de barra)[docs/bar-scan.jpeg]
-!(Fichad e producto)[docs/producto.jpeg]
-!(Favoritos)[docs/favoritos.jpeg]
-!(Login)[docs/login.jpeg]
+<img src="docs/home.jpeg" alt="Pantalla de inicio" width=300>
+<img src="docs/busqueda.jpeg" alt="Búsqueda de producto" width=300>
+<img src="docs/bar-scan.jpeg" alt="Escaneo de códigos de barras" width=300>
+<img src="docs/producto.jpeg" alt="Ficha de producto" width=300>
 
 ---
 
@@ -78,7 +111,7 @@ app/(auth)/
 
 ### Capturas de pantalla
 
-[INSERTAR CAPTURAS DEL LOGIN AQUÍ]
+<img src="docs/login.jpeg" alt="Login" width=300>
 
 ---
 
@@ -150,9 +183,7 @@ Firebase Realtime Database permite sincronizar datos en tiempo real entre dispos
 
 ### Capturas de pantalla
 
-[INSERTAR CAPTURAS DE FAVORITOS AQUÍ]
-
----
+## <img src="docs/favoritos.jpeg" alt="Favoritos" width=300>
 
 ## 4. Puesta en marcha
 
