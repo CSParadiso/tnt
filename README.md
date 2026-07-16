@@ -26,12 +26,10 @@
 
 ### Capturas de pantalla
 
-!(Pantalla de inicio)[docs/home.jpeg]
-!(Búsqueda de productos)[docs/busqueda.jpeg]
-!(Escaneo de códigos de barra)[docs/bar-scan.jpeg]
-!(Fichad e producto)[docs/producto.jpeg]
-!(Favoritos)[docs/favoritos.jpeg]
-!(Login)[docs/login.jpeg]
+![Pantalla de inicio](docs/home.jpeg)
+![Búsqueda de productos](docs/busqueda.jpeg)
+![Escaneo de códigos de barras](docs/bar-scan.jpeg)
+![Ficha de producto](docs/producto.jpeg)
 
 ---
 
@@ -78,7 +76,7 @@ app/(auth)/
 
 ### Capturas de pantalla
 
-[INSERTAR CAPTURAS DEL LOGIN AQUÍ]
+![Login](docs/login.jpeg)
 
 ---
 
@@ -150,7 +148,7 @@ Firebase Realtime Database permite sincronizar datos en tiempo real entre dispos
 
 ### Capturas de pantalla
 
-[INSERTAR CAPTURAS DE FAVORITOS AQUÍ]
+![Favoritos](docs/favoritos.jpeg)
 
 ---
 
