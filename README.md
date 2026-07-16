@@ -1,3 +1,38 @@
+<div align="center">
+
+<img src="docs/untdf.png" alt="Logo de la Universidad Nacional de Tierra del Fuego" width="500">
+
+<br>
+
+# Taller de Nuevas Tecnologías
+
+<br>
+
+## Paradiso, Cayetano Simón
+
+</div>
+
+<br>
+
+- Repositorio: <a target="_blank" href="https://github.com/CSParadiso/tnt.git">TNT</a><br>
+- Docente: Viera, Leonel Ezequiel<br>
+- Año de cursada: 2026
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 # TNT Alimentos
 
 ## 1. Resumen del proyecto
